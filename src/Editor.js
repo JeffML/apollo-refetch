@@ -28,15 +28,15 @@ const launchRows = (data) => {
         <td>{site}</td>
         <td>{missionName}</td>
         <td>{rocketName}</td>
-        <td>{isBooked.toString()}</td>
+        <td><input type='checkbox' name="booking" value={isBooked}/></td>
+        <td><input type='checkbox' name="scratch" value={false}/></td>
       </tr>
     })
 }
 
 
-export default function Launches(props) {
+export default function Editor(props) {
   const {setEditing} = props;
-
   return (
     <Query query={qLaunches}>
       {({ data, loading, error }) => {
@@ -44,11 +44,12 @@ export default function Launches(props) {
         if (error) return <p>ERROR</p>;
         return (
           <Fragment>
-            <input type='button' value='make changes' onClick={() => setEditing(true)}/>
+            <input type='button' value='submit changes' />
+            <input type='button' value='go back' onClick={() => setEditing(false)} style={{marginTop: '20vh'}}/>
             <table style={{ border: 'solid 1px' }}>
               <tbody>
                 <tr>
-                  <th>Site</th><th>Mission</th><th>Rocket</th><th>Booked</th>
+                  <th>Site</th><th>Mission</th><th>Rocket</th><th>Book It!</th><th>Scratched <span role="img">😭</span></th>
                 </tr>
                 {launchRows(data)}
               </tbody>
