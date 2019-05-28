@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
-import { Query } from 'react-apollo';
+import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
-const qLaunches = gql`query ls {
+const LAUNCHES = gql`query launchesToEdit {
   launches {
     launches {
       id
@@ -34,17 +34,57 @@ const launchRows = (data) => {
     })
 }
 
+const SCRATCH = gql`
+`;
+
+const BOOK = gql`
+`;
+
+const submitChanges = (evt, mScratch, mBook) => {
+  const scratchElems = evt.target.parentElement.scratch;
+  const bookingElems = evt.target.parentElement.booking;
+
+  const scratchedAry = [];
+  const bookedAry = [];
+
+  if (scratchElems.length) {
+    scratchElems.forEach(scratched => {
+      if (scratched.checked) 
+        scratchedAry.push(scratched.id)
+      });
+  }
+
+  if (bookingElems.length) {
+    bookingElems.forEach(booked => {
+      if (booked.checked) 
+        bookedAry.push(booked.id)
+      });
+  }
+}
+
+const Submit = (props) => {
+  return <Mutation mutation={SCRATCH}>
+    {mScratch => (
+      <Mutation mutation={BOOK}>
+        {mBook => (
+          <input type="submit" value="Submit Changes"
+            onClick={evt => submitChanges(evt, mScratch, mBook)} />
+        )}
+      </Mutation>
+    )}
+  </Mutation>;
+};
 
 export default function Editor(props) {
   const {setEditing} = props;
   return (
-    <Query query={qLaunches}>
+    <Query query={LAUNCHES}>
       {({ data, loading, error }) => {
         if (loading) return <p>Loading...</p>;
         if (error) return <p>ERROR</p>;
         return (
           <Fragment>
-            <input type='button' value='submit changes' />
+            <Submit/>
             <input type='button' value='go back' onClick={() => setEditing(false)} style={{marginTop: '20vh'}}/>
             <table style={{ border: 'solid 1px' }}>
               <tbody>
