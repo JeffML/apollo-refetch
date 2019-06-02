@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
-const LAUNCHES = gql`query launchesToEdit {
+const LAUNCHES = gql`query bookie {
   launches {
     launches {
       id
@@ -20,63 +20,51 @@ const LAUNCHES = gql`query launchesToEdit {
 }`;
 
 const launchRows = (data) => {
-  return data.launches &&
-    data.launches.launches &&
-    data.launches.launches.map((launch) => {
+  const launches = data.launches && data.launches.launches
+  return launches &&
+    launches.filter(launch => !launch.isBooked).map(launch => {
       const { id, site, mission: { name: missionName }, rocket: { name: rocketName }, isBooked } = launch;
       return <tr key={id}>
         <td>{site}</td>
         <td>{missionName}</td>
         <td>{rocketName}</td>
-        <td><input type='checkbox' name="booking" value={isBooked}/></td>
-        <td><input type='checkbox' name="scratch" value={false}/></td>
+        <td><input type='checkbox' name="booking" value={isBooked} /></td>
       </tr>
     })
 }
 
-const SCRATCH = gql`
-`;
-
 const BOOK = gql`
+  mutation book {
+    bookTrips (launchIds: $ids) {
+      success
+    }
+  }
 `;
 
-const submitChanges = (evt, mScratch, mBook) => {
-  const scratchElems = evt.target.parentElement.scratch;
+const submitChanges = (evt, mBook) => {
   const bookingElems = evt.target.parentElement.booking;
-
-  const scratchedAry = [];
   const bookedAry = [];
-
-  if (scratchElems.length) {
-    scratchElems.forEach(scratched => {
-      if (scratched.checked) 
-        scratchedAry.push(scratched.id)
-      });
-  }
 
   if (bookingElems.length) {
     bookingElems.forEach(booked => {
-      if (booked.checked) 
+      if (booked.checked)
         bookedAry.push(booked.id)
-      });
+    });
+    mBook({variables: {ids: bookedAry}})
   }
 }
 
 const Submit = (props) => {
-  return <Mutation mutation={SCRATCH}>
-    {mScratch => (
-      <Mutation mutation={BOOK}>
-        {mBook => (
-          <input type="submit" value="Submit Changes"
-            onClick={evt => submitChanges(evt, mScratch, mBook)} />
-        )}
-      </Mutation>
+  return <Mutation mutation={BOOK}>
+    {mBook => (
+      <input type="submit" value="Submit Changes"
+        onClick={evt => submitChanges(evt, mBook)} />
     )}
   </Mutation>;
 };
 
 export default function Editor(props) {
-  const {setEditing} = props;
+  const { setEditing } = props;
   return (
     <Query query={LAUNCHES}>
       {({ data, loading, error }) => {
@@ -84,12 +72,12 @@ export default function Editor(props) {
         if (error) return <p>ERROR</p>;
         return (
           <Fragment>
-            <Submit/>
-            <input type='button' value='go back' onClick={() => setEditing(false)} style={{marginTop: '20vh'}}/>
+            <Submit />
+            <input type='button' value='go back' onClick={() => setEditing(false)} style={{ marginTop: '20vh' }} />
             <table style={{ border: 'solid 1px' }}>
               <tbody>
                 <tr>
-                  <th>Site</th><th>Mission</th><th>Rocket</th><th>Book It!</th><th>Scratched <span role="img">😭</span></th>
+                  <th>Site</th><th>Mission</th><th>Rocket</th><th>Book It!</th>
                 </tr>
                 {launchRows(data)}
               </tbody>
