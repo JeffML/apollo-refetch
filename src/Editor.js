@@ -2,7 +2,14 @@ import React, { Fragment } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
-const LAUNCHES = gql`query bookie {
+const LOGIN = gql`
+  mutation login {
+    login(email:"filbert@flum.com") 
+  }
+`
+
+const LAUNCHES = gql`
+query bookie {
   launches {
     launches {
       id
@@ -28,13 +35,13 @@ const launchRows = (data) => {
         <td>{site}</td>
         <td>{missionName}</td>
         <td>{rocketName}</td>
-        <td><input type='checkbox' name="booking" value={isBooked} /></td>
+        <td><input type='checkbox' id={id} name="booking" value={isBooked} /></td>
       </tr>
     })
 }
 
 const BOOK = gql`
-  mutation book {
+  mutation book($ids: [ID]!) {
     bookTrips (launchIds: $ids) {
       success
     }
@@ -42,7 +49,7 @@ const BOOK = gql`
 `;
 
 const submitChanges = (evt, mBook) => {
-  const bookingElems = evt.target.parentElement.booking;
+  const bookingElems = document.getElementsByName('booking')
   const bookedAry = [];
 
   if (bookingElems.length) {
@@ -55,12 +62,19 @@ const submitChanges = (evt, mBook) => {
 }
 
 const Submit = (props) => {
-  return <Mutation mutation={BOOK}>
-    {mBook => (
-      <input type="submit" value="Submit Changes"
-        onClick={evt => submitChanges(evt, mBook)} />
-    )}
-  </Mutation>;
+  return <Mutation mutation={LOGIN} update={(cache, { data }) => sessionStorage.setItem('auth', data.login)}>
+    {
+      mLogin => {
+        if (!sessionStorage.auth) mLogin()
+        return <Mutation mutation={BOOK}>
+          {mBook => (
+            <input type="submit" value="Submit Changes"
+              onClick={evt => submitChanges(evt, mBook)} />
+          )}
+        </Mutation>
+      }
+    }
+  </Mutation>
 };
 
 export default function Editor(props) {

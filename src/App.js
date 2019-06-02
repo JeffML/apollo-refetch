@@ -5,7 +5,7 @@ import './App.css';
 import Launches from './Launches';
 import Editor from './Editor';
 
-const client = new ApolloClient({uri: 'http://localhost:4000/'})
+const client = new ApolloClient({uri: 'http://localhost:4000/', headers: {authorization: sessionStorage.getItem('auth')}})
 
 const displayIf = (show) => ({ display: show? 'block' : 'none'});
 
