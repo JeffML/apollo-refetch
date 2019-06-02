@@ -48,7 +48,7 @@ const BOOK = gql`
   }
 `;
 
-const submitChanges = (evt, mBook) => {
+const submitChanges = (evt, mBook, refetch) => {
   const bookingElems = document.getElementsByName('booking')
   const bookedAry = [];
 
@@ -58,10 +58,12 @@ const submitChanges = (evt, mBook) => {
         bookedAry.push(booked.id)
     });
     mBook({variables: {ids: bookedAry}})
+    refetch();
   }
 }
 
 const Submit = (props) => {
+  const {refetch} = props;
   return <Mutation mutation={LOGIN} update={(cache, { data }) => sessionStorage.setItem('auth', data.login)}>
     {
       mLogin => {
@@ -69,7 +71,7 @@ const Submit = (props) => {
         return <Mutation mutation={BOOK}>
           {mBook => (
             <input type="submit" value="Submit Changes"
-              onClick={evt => submitChanges(evt, mBook)} />
+              onClick={evt => submitChanges(evt, mBook, refetch)} />
           )}
         </Mutation>
       }
@@ -81,12 +83,12 @@ export default function Editor(props) {
   const { setEditing } = props;
   return (
     <Query query={LAUNCHES}>
-      {({ data, loading, error }) => {
+      {({ data, loading, error, refetch }) => {
         if (loading) return <p>Loading...</p>;
         if (error) return <p>ERROR</p>;
         return (
           <Fragment>
-            <Submit />
+            <Submit refetch={refetch}/>
             <input type='button' value='go back' onClick={() => setEditing(false)} style={{ marginTop: '20vh' }} />
             <table style={{ border: 'solid 1px' }}>
               <tbody>
