@@ -38,7 +38,7 @@ export default function Launches(props) {
   const {setEditing} = props;
 
   return (
-    <Query query={qLaunches} fetchPolicy='no-cache'>
+    <Query query={qLaunches} fetchPolicy='cache-and-network'>
       {({ data, loading, error }) => {
         console.dir(data)
         if (loading) return <p>Loading...</p>;

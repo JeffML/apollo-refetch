@@ -1,10 +1,11 @@
 import React, { Fragment } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
+import faker from 'faker';
 
 const LOGIN = gql`
   mutation login {
-    login(email:"filbert@flum.com") 
+    login(email:"${faker.internet.email()}") 
   }
 `
 
@@ -64,10 +65,12 @@ const submitChanges = (evt, mBook, refetch) => {
 
 const Submit = (props) => {
   const {refetch} = props;
-  return <Mutation mutation={LOGIN} update={(cache, { data }) => sessionStorage.setItem('auth', data.login)}>
+  return <Mutation mutation={LOGIN} 
+    update={(cache, { data }) => sessionStorage.setItem('auth', data.login)}
+    refetchQueries={['ls']}>
     {
-      mLogin => {
-        if (!sessionStorage.auth) mLogin()
+       mLogin => {
+        if (!sessionStorage.auth) mLogin();
         return <Mutation mutation={BOOK}>
           {mBook => (
             <input type="submit" value="Submit Changes"
