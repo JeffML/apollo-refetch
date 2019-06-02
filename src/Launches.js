@@ -38,7 +38,7 @@ export default function Launches(props) {
   const {setEditing} = props;
 
   return (
-    <Query query={qLaunches}>
+    <Query query={qLaunches} pollInterval={1500}>
       {({ data, loading, error }) => {
         if (loading) return <p>Loading...</p>;
         if (error) return <p>ERROR</p>;
