@@ -72,7 +72,7 @@ const Submit = (props) => {
     {
        mLogin => {
         if (!sessionStorage.auth) mLogin();
-        return <Mutation mutation={BOOK} refetchQueries = {['ls']}>
+        return <Mutation mutation={BOOK} refetchQueries = {['ls', 'bookie']}>
           {mBook => (
             <input type="submit" value="Submit Changes"
               onClick={evt => submitChanges(evt, mBook, refetch)} />
