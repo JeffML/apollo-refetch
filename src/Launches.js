@@ -38,9 +38,8 @@ export default function Launches(props) {
   const {setEditing} = props;
 
   return (
-    <Query query={qLaunches} fetchPolicy='cache-and-network'>
+    <Query query={qLaunches}>
       {({ data, loading, error }) => {
-        console.dir(data)
         if (loading) return <p>Loading...</p>;
         if (error) return <p>ERROR</p>;
         return (
@@ -60,3 +59,5 @@ export default function Launches(props) {
     </Query>
   );
 };
+
+export {qLaunches};

@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import faker from 'faker';
+import {qLaunches} from './Launches';
 
 const LOGIN = gql`
   mutation login {
@@ -67,7 +68,8 @@ const Submit = (props) => {
   const {refetch} = props;
   return <Mutation mutation={LOGIN} 
     update={(cache, { data }) => sessionStorage.setItem('auth', data.login)}
-    refetchQueries={['ls']}>
+    refetchQueries = {['lsxxx']}
+    >
     {
        mLogin => {
         if (!sessionStorage.auth) mLogin();
