@@ -60,7 +60,7 @@ const submitChanges = (evt, mBook, refetch) => {
         bookedAry.push(booked.id)
     });
     mBook({variables: {ids: bookedAry}})
-    refetch();
+    // refetch();
   }
 }
 
@@ -68,12 +68,11 @@ const Submit = (props) => {
   const {refetch} = props;
   return <Mutation mutation={LOGIN} 
     update={(cache, { data }) => sessionStorage.setItem('auth', data.login)}
-    refetchQueries = {['lsxxx']}
     >
     {
        mLogin => {
         if (!sessionStorage.auth) mLogin();
-        return <Mutation mutation={BOOK}>
+        return <Mutation mutation={BOOK} refetchQueries = {['ls']}>
           {mBook => (
             <input type="submit" value="Submit Changes"
               onClick={evt => submitChanges(evt, mBook, refetch)} />
